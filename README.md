@@ -25,6 +25,25 @@
 
 ---
 
+## 📱 Uygulama Arayüzü
+
+<table>
+  <tr>
+    <td align="center"><b>🌻 Bahçe &amp; Şişeler</b></td>
+    <td align="center"><b>📊 Grafik &amp; Tempo</b></td>
+    <td align="center"><b>🏃 Spor &amp; Adım Sayar</b></td>
+    <td align="center"><b>🐠 Ödüller &amp; Akvaryum</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/bahce.png" alt="Bahçe Ekranı" width="200" /></td>
+    <td><img src="docs/screenshots/grafik.png" alt="Grafik Ekranı" width="200" /></td>
+    <td><img src="docs/screenshots/spor.png" alt="Spor ve Adım Sayar Ekranı" width="200" /></td>
+    <td><img src="docs/screenshots/akvaryum.png" alt="Akvaryum Ekranı" width="200" /></td>
+  </tr>
+</table>
+
+---
+
 ## ✨ Öne Çıkan Özellikler
 
 - **Akıllı Su Takibi & Şişe Seçenekleri:** `100 ml`, `200 ml`, `330 ml`, `500 ml`, `750 ml` ve `1000 ml` hızlı içim seçenekleri ile özel hedef belirleme.
