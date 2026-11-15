@@ -2140,33 +2140,94 @@ function def() {
     rem: { on: false, hrs: 2 }
   };
 }
+function escHtml(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+function isPlainObj(v) {
+  return !!v && typeof v === "object" && !Array.isArray(v);
+}
+function cleanNum(v, min, max, fallback) {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
+}
+function importSafeState(raw) {
+  const base = def();
+  if (isPlainObj(raw)) {
+    Object.keys(base).forEach(k => {
+      if (Object.prototype.hasOwnProperty.call(raw, k) && raw[k] !== undefined) {
+        base[k] = raw[k];
+      }
+    });
+  }
+  S = base;
+  normState();
+}
 let S = def();
 try {
   const r = localStorage.getItem(KEY);
-  if (r) S = Object.assign(def(), JSON.parse(r));
+  if (r) importSafeState(JSON.parse(r));
 } catch (e) {}
 function normState() {
-  if (!Array.isArray(S.owned) || !S.owned.length) S.owned = ["aycicegi"];
+  const base = def();
+  ["days", "dayMl", "logs", "done", "claimed", "petXp", "fishFed", "am", "morn", "tq", "steps", "stepRw", "wc"].forEach(k => {
+    if (!isPlainObj(S[k])) S[k] = {};
+  });
+  S.goal = cleanNum(S.goal, 1, 30, base.goal);
+  S.ml = cleanNum(S.ml, 50, 1000, base.ml);
+  S.cup = cleanNum(S.cup, 50, 2000, S.ml);
+  S.drops = cleanNum(S.drops, 0, 9999999, 0);
+  S.xp = cleanNum(S.xp, 0, 9999999, 0);
+  S.best = cleanNum(S.best, 0, 36500, 0);
+  S.sh = cleanNum(S.sh, 0, 999999, 0);
+  S.snd = S.snd !== false;
+  if (typeof S.shd !== "string") S.shd = "";
+  if (typeof S.gameDay !== "string") S.gameDay = "";
+  if (typeof S.eggDay !== "string") S.eggDay = "";
+  if (!SEA[S.season]) S.season = "";
+  if (S.theme !== "light" && S.theme !== "dark") S.theme = "";
+  S.owned = Array.isArray(S.owned) ? S.owned.filter(k => !!PL[k]) : [];
+  if (!S.owned.length) S.owned = ["aycicegi"];
   if (!PL[S.plant]) S.plant = "aycicegi";
-  if (!Array.isArray(S.pots) || !S.pots.length) S.pots = ["klasik"];
+  S.pots = Array.isArray(S.pots) ? S.pots.filter(k => !!POT[k]) : [];
+  if (!S.pots.length) S.pots = ["klasik"];
   if (!POT[S.pot]) S.pot = "klasik";
-  if (!S.petXp || typeof S.petXp !== "object") S.petXp = {};
-  if (!S.fishFed || typeof S.fishFed !== "object") S.fishFed = {};
-  if (!S.dayMl || typeof S.dayMl !== "object") S.dayMl = {};
-  if (!S.logs || typeof S.logs !== "object") S.logs = {};
-  if (!S.morn || typeof S.morn !== "object") S.morn = {};
-  if (!S.steps || typeof S.steps !== "object") S.steps = {};
-  if (!S.stepRw || typeof S.stepRw !== "object") S.stepRw = {};
-  if (![4000, 6000, 8000, 10000].includes(+S.stepGoal)) S.stepGoal = 6000;
-  if (!S.hwSteps || typeof S.hwSteps !== "object") S.hwSteps = { day: "", val: 0, man: 0, log: [] };
-  if (!Array.isArray(S.hwSteps.log)) S.hwSteps.log = [];
-  if (!Number.isFinite(S.hwSteps.val)) S.hwSteps.val = 0;
-  if (!Number.isFinite(S.hwSteps.man)) S.hwSteps.man = 0;
-  if (!Number.isFinite(S.cup) || S.cup < 50) S.cup = S.ml || 200;
-  if (S.hero !== "droplet") S.hero = "plant";
+  S.pets = Array.isArray(S.pets) ? S.pets.filter(k => !!CR[k]) : [];
   if (S.pet && !CR[S.pet]) S.pet = "";
+  S.accs = Array.isArray(S.accs) ? S.accs.filter(k => typeof ACC !== "undefined" && !!ACC[k]) : [];
+  if (S.acc && (typeof ACC === "undefined" || !ACC[S.acc])) S.acc = "";
+  if (!isPlainObj(S.egg)) S.egg = null;
+  else S.egg = { d: cleanNum(S.egg.d, 0, 10, 0) };
+  Object.keys(S.logs).forEach(d => {
+    const arr = Array.isArray(S.logs[d]) ? S.logs[d] : [];
+    S.logs[d] = arr.filter(isPlainObj).slice(-100).map(item => ({
+      t: String(item.t == null ? "" : item.t).slice(0, 16),
+      ml: cleanNum(item.ml, 1, 5000, S.ml),
+      hr: cleanNum(item.hr, 0, 23, 12),
+      xp: cleanNum(item.xp, 0, 500, 0),
+      dr: cleanNum(item.dr, 0, 100, 0),
+      pet: typeof item.pet === "string" && CR[item.pet] ? item.pet : "",
+      petXp: cleanNum(item.petXp, 0, 100, 0)
+    }));
+  });
+  Object.keys(S.fishFed).forEach(k => {
+    S.fishFed[k] = cleanNum(S.fishFed[k], 0, 15, 0);
+  });
+  if (![4000, 6000, 8000, 10000].includes(+S.stepGoal)) S.stepGoal = 6000;
+  if (!isPlainObj(S.hwSteps)) S.hwSteps = { day: "", val: 0, man: 0, log: [] };
+  if (typeof S.hwSteps.day !== "string") S.hwSteps.day = "";
+  S.hwSteps.val = cleanNum(S.hwSteps.val, 0, 1000000, 0);
+  S.hwSteps.man = cleanNum(S.hwSteps.man, 0, 1000000, 0);
+  S.hwSteps.log = Array.isArray(S.hwSteps.log)
+    ? S.hwSteps.log.map(v => cleanNum(v, 1, 100000, 0)).filter(Boolean).slice(-50)
+    : [];
+  if (S.hero !== "droplet") S.hero = "plant";
   S.shelfNight = !!S.shelfNight;
-  if (!S.rem || typeof S.rem !== "object") S.rem = { on: false, hrs: 2 };
+  if (!isPlainObj(S.rem)) S.rem = { on: false, hrs: 2 };
   S.rem.on = !!S.rem.on;
   if (![1, 2, 3].includes(+S.rem.hrs)) S.rem.hrs = 2;
 }
@@ -3894,7 +3955,7 @@ function chart() {
   ).join("") + '</div>';
   if (logs.length) {
     logHtml += '<div class="log-pills">' + [...logs].reverse().map(item =>
-      '<span class="log-pill">🕐 ' + item.t + ' · +' + item.ml + ' ml</span>'
+      '<span class="log-pill">🕐 ' + escHtml(item.t) + ' · +' + (+item.ml || 0) + ' ml</span>'
     ).join("") + '</div>';
   } else {
     logHtml += '<p style="margin:0;color:var(--mut);font-size:13px;text-align:center">Bugün henüz içme kaydı yok. İçtikçe saatlik döküm burada görünecek 💧</p>';
@@ -4320,9 +4381,8 @@ $("#bkc").onclick = async () => {
 $("#bkl").onclick = () => {
   try {
     const o = decodeBackup($("#bk").value.trim());
-    if (typeof o !== "object" || !o || typeof o.days !== "object") throw 0;
-    S = Object.assign(def(), o);
-    normState();
+    if (!isPlainObj(o) || !isPlainObj(o.days)) throw 0;
+    importSafeState(o);
     save();
     fx.k = null;
     settings();
@@ -4369,9 +4429,8 @@ $("#bkf").onchange = async e => {
   try {
     const txt = await file.text();
     const o = JSON.parse(txt.trim());
-    if (typeof o !== "object" || !o || typeof o.days !== "object") throw 0;
-    S = Object.assign(def(), o);
-    normState();
+    if (!isPlainObj(o) || !isPlainObj(o.days)) throw 0;
+    importSafeState(o);
     save();
     fx.k = null;
     $("#bk").value = encodeBackup(S);
