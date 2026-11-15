@@ -5,6 +5,7 @@
   "author": "Said Ubeydullah ŞAHİN",
   "license": "MIT",
   "scripts": {
+    "test": "node tests/run-all.mjs",
     "sync:web": "node scripts/sync-web.mjs",
     "cap:sync": "node scripts/sync-web.mjs && npx cap sync android",
     "apk:debug": "node scripts/sync-web.mjs && npx cap sync android && node scripts/build-apk.mjs debug",

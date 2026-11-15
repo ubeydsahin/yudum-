@@ -1,11 +1,13 @@
-const CACHE = "yudum-v1.1";
+const CACHE = "yudum-v1.1-r2";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./logom.png",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./fonts/nunito-latin-ext.woff2",
+  "./fonts/nunito-latin.woff2"
 ];
 
 self.addEventListener("install", e => {

@@ -87,7 +87,7 @@ public class StepCounterPlugin extends Plugin implements SensorEventListener {
         SharedPreferences prefs = getPrefs();
         String today = todayStr();
         String storedDay = prefs.getString(K_DAY, "");
-        if (!today.equals(storedDay)) {
+        if (StepCounterLogic.isNewDay(storedDay, today)) {
             prefs.edit().putString(K_DAY, today).putLong(K_STEPS, 0L).apply();
         }
     }
@@ -199,11 +199,7 @@ public class StepCounterPlugin extends Plugin implements SensorEventListener {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             long raw = (long) event.values[0];
             long prevRaw = prefs.getLong(K_LAST_RAW, -1L);
-            long delta = 0L;
-            if (prevRaw >= 0L) {
-                delta = raw >= prevRaw ? (raw - prevRaw) : raw;
-                if (delta < 0L) delta = 0L;
-            }
+            long delta = StepCounterLogic.computeCounterDelta(raw, prevRaw);
             long total = prefs.getLong(K_STEPS, 0L) + delta;
             prefs.edit().putLong(K_LAST_RAW, raw).putLong(K_STEPS, total).apply();
             notifyListeners("stepsUpdate", buildStatus());

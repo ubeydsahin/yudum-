@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://localhost http://localhost capacitor://localhost; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'none';">
 <meta name="theme-color" content="#1ea7ff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -10,8 +11,23 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+  src: url("./fonts/nunito-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+  src: url("./fonts/nunito-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 :root {
   --bg: #f2fbff;
   --card: #ffffff;
@@ -1861,7 +1877,7 @@ nav button.on span {
 <body>
 <header>
   <button class="brand-chip" id="brandBtn" type="button" aria-label="Uygulama hakkında">
-    <img src="logom.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="logom.png" alt="Logo" data-hide-err="1">
   </button>
   <div class="pill" id="lv">Sv. 1</div>
   <div class="pill" id="dr">💧 0</div>
@@ -2007,7 +2023,7 @@ nav button.on span {
   <h2>Uygulama hakkında</h2>
   <div class="card dev-card" id="devCard">
     <div class="dev-logo">
-      <img src="logom.png" alt="Said Ubeydullah ŞAHİN Logo" onerror="this.style.display='none'">
+      <img src="logom.png" alt="Said Ubeydullah ŞAHİN Logo" data-hide-err="1">
     </div>
     <div class="dev-info">
       <b id="appNameEl">Yudum</b>
@@ -4859,6 +4875,10 @@ $("#sportHero").onclick = async e => {
 $("#sportAdvice").onclick = e => {
   if (e.target.closest("#stepDrinkBtn")) drink();
 };
+document.querySelectorAll('img[data-hide-err]').forEach(img => {
+  if (img.complete && img.naturalWidth === 0) img.style.display = "none";
+  img.addEventListener("error", () => { img.style.display = "none"; });
+});
 render();
 setupRemTimer();
 initCapNative();
