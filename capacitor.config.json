@@ -1,0 +1,15 @@
+{
+  "appId": "com.saidubeydullahsahin.yudum",
+  "appName": "Yudum",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_yudum",
+      "iconColor": "#1EA7FF"
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}

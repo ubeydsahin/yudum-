@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Yudum</string>
+    <string name="title_activity_main">Yudum</string>
+    <string name="package_name">com.saidubeydullahsahin.yudum</string>
+    <string name="custom_url_scheme">com.saidubeydullahsahin.yudum</string>
+</resources>

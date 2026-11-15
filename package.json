@@ -1,0 +1,25 @@
+{
+  "name": "yudum",
+  "version": "1.1.0",
+  "description": "Yudum - Günlük su içme, bahçe, spor ve dost koleksiyonu uygulaması",
+  "author": "Said Ubeydullah ŞAHİN",
+  "license": "MIT",
+  "scripts": {
+    "sync:web": "node scripts/sync-web.mjs",
+    "cap:sync": "node scripts/sync-web.mjs && npx cap sync android",
+    "apk:debug": "node scripts/sync-web.mjs && npx cap sync android && node scripts/build-apk.mjs debug",
+    "apk:release": "node scripts/sync-web.mjs && npx cap sync android && node scripts/build-apk.mjs release"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2"
+  }
+}
